@@ -7,11 +7,9 @@ using System.Xml;
 namespace Resource.Convert
 {
     // 將 Android project 的 string.xml 檔 轉成 iOS project 中的 Localizable.strings 檔
-    class Android2iOSResourceConverter
+    class Android2iOSResourceConverter : ResourceConverter
     {
-        private const string SEPARATOR = "=";
-
-        public bool Convert(string fromPath, out string toPath)
+        public override bool Convert(string fromPath, out string toPath, Action<List<string>> duplicated)
         {
             bool result = false;
             toPath = null;
@@ -29,7 +27,8 @@ namespace Resource.Convert
             XmlNodeList list = root.SelectNodes("string");
 
             Dictionary<string, string> properties = new Dictionary<string, string>();
-            List<string> duplicated = new List<string>();
+
+            this.duplicateds.Clear();
 
             if (list != null)
             {
@@ -43,17 +42,7 @@ namespace Resource.Convert
                     }
                     else
                     {
-                        duplicated.Add(id);
-                    }
-                }
-
-                if (duplicated.Count > 0)
-                {
-                    Console.WriteLine("\nduplicated key: ");
-
-                    foreach (string key in duplicated)
-                    {
-                        Console.WriteLine(key);
+                        this.duplicateds.Add(id);
                     }
                 }
 
@@ -70,6 +59,8 @@ namespace Resource.Convert
                 }
 
                 result = true;
+
+                duplicated(this.duplicateds);
             }
 
             return result;
@@ -82,9 +73,8 @@ namespace Resource.Convert
 
             foreach (KeyValuePair<string, string> pair in properties)
             {
-                 // resouce string
-                 new_contents[index] = pair.Key + SEPARATOR + pair.Value;
-
+                // resouce string
+                new_contents[index] = pair.Key + IOS_SEPARATOR + pair.Value;
                 index++;
             }
 

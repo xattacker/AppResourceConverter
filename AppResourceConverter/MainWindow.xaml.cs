@@ -64,14 +64,21 @@ namespace AppResourceConverter
                 string new_path = null;
                 Android2iOSResourceConverter converter = new Android2iOSResourceConverter();
 
-                if (!converter.Convert(filePath, out new_path))
-                {
-                    MessageBox.Show("convert failed.");
-                }
-                else
+                if (
+                   converter.Convert
+                   (
+                   filePath, 
+                   out new_path,
+                   (List<string> duplicated) => { }
+                   )
+                   )
                 {
                     FileInfo file = new FileInfo(new_path);
                     MessageBox.Show("convert succeed!!\nnew file is: " + file.Name);
+                }
+                else
+                {
+                    MessageBox.Show("convert failed.");
                 }
             }
             );
@@ -88,14 +95,21 @@ namespace AppResourceConverter
                 string new_path = null;
                 IOS2AndroidResourceConverter converter = new IOS2AndroidResourceConverter();
 
-                if (!converter.Convert(filePath, out new_path))
-                {
-                    MessageBox.Show("convert failed.");
-                }
-                else
+                if (
+                   converter.Convert
+                   (
+                   filePath, 
+                   out new_path,
+                   (List<string> duplicated) =>{}
+                   )
+                   )
                 {
                     FileInfo file = new FileInfo(new_path);
                     MessageBox.Show("convert succeed!!\nnew file is: " + file.Name);
+                }
+                else
+                {
+                    MessageBox.Show("convert failed.");
                 }
             }
             );

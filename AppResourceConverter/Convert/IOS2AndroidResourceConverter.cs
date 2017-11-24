@@ -6,11 +6,9 @@ using System.Xml;
 namespace Resource.Convert
 {
     // 將 iOS project 中的 Localizable.strings 檔 轉成 Android project 的 string.xml 檔
-    class IOS2AndroidResourceConverter
+    class IOS2AndroidResourceConverter : ResourceConverter
     {
-        private const string SEPARATOR = "=";
-
-        public bool Convert(string fromPath, out string toPath)
+        public override bool Convert(string fromPath, out string toPath, Action<List<string>> duplicated)
         {
             bool result = false;
             toPath = null;
@@ -33,6 +31,8 @@ namespace Resource.Convert
 
                 this.ExportToAndroidResourceFile(properties, toPath);
                 result = true;
+
+                duplicated(this.duplicateds);
             }
 
             return result;
@@ -41,8 +41,9 @@ namespace Resource.Convert
         private Dictionary<string, string> LoadiOSResource(string aResourcePath)
         {
             Dictionary<string, string> properties = new Dictionary<string, string>();
-
             StreamReader reader = null;
+
+            this.duplicateds.Clear();
 
             try
             {
@@ -61,7 +62,7 @@ namespace Resource.Convert
 
                     if (
                        line.Length > 0 &&
-                       (index = line.IndexOf(SEPARATOR)) != -1
+                       (index = line.IndexOf(IOS_SEPARATOR)) != -1
                        )
                     {
                         try
@@ -69,7 +70,7 @@ namespace Resource.Convert
                             line = line.Trim();
                             line = line.Replace("\"", string.Empty);
                             line = line.Replace(";", string.Empty);
-                            index = line.IndexOf(SEPARATOR);
+                            index = line.IndexOf(IOS_SEPARATOR);
 
                             string key = line.Substring(0, index);
                             if (!properties.ContainsKey(key))
@@ -78,7 +79,7 @@ namespace Resource.Convert
                             }
                             else
                             {
-                                Console.WriteLine("\nduplicated key: " + key);
+                                duplicateds.Add(key);
                             }
                         }
                         catch
@@ -119,7 +120,7 @@ namespace Resource.Convert
 
             foreach (KeyValuePair<string, string> pair in properties)
             {
-               string value = pair.Key + SEPARATOR + pair.Value;
+               string value = pair.Key + IOS_SEPARATOR + pair.Value;
 
                XmlElement element = doc.CreateElement(string.Empty, "string", string.Empty);
 

@@ -65,6 +65,7 @@
     <Compile Include="Convert\Android2iOSResourceConverter.cs" />
     <Compile Include="Convert\IOS2AndroidResourceConverter.cs" />
     <Compile Include="Convert\IOSResourceFormatter.cs" />
+    <Compile Include="Convert\ResourceConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
