@@ -9,10 +9,11 @@ namespace Resource.Convert
     // 將 Android project 的 string.xml 檔 轉成 iOS project 中的 Localizable.strings 檔
     class Android2iOSResourceConverter : ResourceConverter
     {
-        public override bool Convert(string fromPath, out string toPath, Action<List<string>> duplicated)
+        public override bool Convert(string fromPath, out string toPath, out List<string> duplicated)
         {
             bool result = false;
             toPath = null;
+            duplicated = null;
 
             if (!File.Exists(fromPath))
             {
@@ -58,9 +59,8 @@ namespace Resource.Convert
                     this.ExportToiOSResourceFile(properties, toPath);
                 }
 
+                duplicated = this.duplicateds;
                 result = true;
-
-                duplicated(this.duplicateds);
             }
 
             return result;

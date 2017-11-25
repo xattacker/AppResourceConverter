@@ -63,13 +63,14 @@ namespace AppResourceConverter
             {
                 string new_path = null;
                 Android2iOSResourceConverter converter = new Android2iOSResourceConverter();
+                List<string> duplicated = null;
 
                 if (
                    converter.Convert
                    (
                    filePath, 
                    out new_path,
-                   (List<string> duplicated) => { }
+                   out duplicated
                    )
                    )
                 {
@@ -94,13 +95,14 @@ namespace AppResourceConverter
             {
                 string new_path = null;
                 IOS2AndroidResourceConverter converter = new IOS2AndroidResourceConverter();
+                List<string> duplicated = null;
 
                 if (
                    converter.Convert
                    (
                    filePath, 
                    out new_path,
-                   (List<string> duplicated) =>{}
+                   out duplicated
                    )
                    )
                 {
