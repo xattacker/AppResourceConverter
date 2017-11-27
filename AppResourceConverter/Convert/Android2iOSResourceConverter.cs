@@ -39,7 +39,7 @@ namespace Resource.Convert
 
                     if (!properties.ContainsKey(id))
                     {
-                        properties.Add("\"" + id + "\"", "\"" + node.InnerText.Trim() + "\"");
+                        properties.Add("\"" + id + "\"", "\"" + node.InnerText.Trim() + "\";");
                     }
                     else
                     {
