@@ -5,9 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AppResourceConverter"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        <Button Content="Format iOS resource string&#xD;&#xA;" HorizontalAlignment="Left" Margin="105,37,0,0" VerticalAlignment="Top" Width="294" Height="23" RenderTransformOrigin="0.5,0.5" Click="Button_Click">
+        Title="AppResourceConverter" Height="350" Width="525" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Grid HorizontalAlignment="Left" Width="517">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="14*"/>
+            <ColumnDefinition Width="86*"/>
+            <ColumnDefinition Width="301*"/>
+            <ColumnDefinition Width="116*"/>
+        </Grid.ColumnDefinitions>
+        <Button Content="Format iOS resource string&#xD;&#xA;" HorizontalAlignment="Left" Margin="5,37,0,0" VerticalAlignment="Top" Width="299" Height="23" RenderTransformOrigin="0.5,0.5" Click="Button_Click" Grid.Column="2" Grid.ColumnSpan="2">
             <Button.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -17,8 +23,9 @@
                 </TransformGroup>
             </Button.RenderTransform>
         </Button>
-        <Button Content="Convert Android string xml to iOS resource string" HorizontalAlignment="Left" Margin="102,104,0,0" VerticalAlignment="Top" Width="298" Click="Button_Click_1"/>
-        <Button Content="Convert iOS resource string to Android string xml" HorizontalAlignment="Left" Margin="102,174,0,0" VerticalAlignment="Top" Width="298" Click="Button_Click_2"/>
+        <Button Content="Convert Android string xml to iOS resource string" HorizontalAlignment="Left" Margin="7,104,0,0" VerticalAlignment="Top" Width="298" Click="Button_Click_1" Grid.Column="2" Height="22" Grid.ColumnSpan="2"/>
+        <Button Content="Convert iOS resource string to Android string xml" HorizontalAlignment="Left" Margin="7,174,0,0" VerticalAlignment="Top" Width="298" Click="Button_Click_2" Grid.Column="2" Height="22" Grid.ColumnSpan="2"/>
+        <Button Content="Convert i18n resource string to unicode string" HorizontalAlignment="Left" Margin="7,243,0,0" VerticalAlignment="Top" Width="298" Click="Button_Click_3" Grid.Column="2" Height="22" Grid.ColumnSpan="2"/>
 
     </Grid>
 </Window>

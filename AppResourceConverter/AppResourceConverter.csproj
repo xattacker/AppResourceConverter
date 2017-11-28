@@ -36,6 +36,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -63,6 +64,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Convert\Android2iOSResourceConverter.cs" />
+    <Compile Include="Convert\I18nResourceConverter.cs" />
     <Compile Include="Convert\IOS2AndroidResourceConverter.cs" />
     <Compile Include="Convert\IOSResourceFormatter.cs" />
     <Compile Include="Convert\ResourceConverter.cs" />
