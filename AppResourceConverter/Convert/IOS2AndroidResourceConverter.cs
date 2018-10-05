@@ -20,7 +20,7 @@ namespace Resource.Convert
             }
 
 
-            Dictionary<string, string> properties = this.LoadiOSResource(fromPath);
+            Dictionary<string, PropertyValue> properties = this.LoadiOSResource(fromPath);
             if (properties != null && properties.Count > 0)
             {
                 FileInfo file = new FileInfo(fromPath);
@@ -38,9 +38,9 @@ namespace Resource.Convert
             return result;
         }
 
-        private Dictionary<string, string> LoadiOSResource(string aResourcePath)
+        private Dictionary<string, PropertyValue> LoadiOSResource(string aResourcePath)
         {
-            Dictionary<string, string> properties = new Dictionary<string, string>();
+            Dictionary<string, PropertyValue> properties = new Dictionary<string, PropertyValue>();
             StreamReader reader = null;
 
             this.duplicateds.Clear();
@@ -75,7 +75,11 @@ namespace Resource.Convert
                             string key = line.Substring(0, index);
                             if (!properties.ContainsKey(key))
                             {
-                                properties.Add(key, line.Substring(index + 1));
+                                PropertyValue value = new PropertyValue();
+                                value.Type = PropertyType.RESOURCE;
+                                value.Content = line.Substring(index + 1);
+
+                                properties.Add(key, value);
                             }
                             else
                             {
@@ -85,6 +89,29 @@ namespace Resource.Convert
                         catch
                         {
                             // ignore one line error
+                        }
+                    }
+                    else
+                    {
+                        line = line.Trim();
+
+                        if (String.IsNullOrEmpty(line))
+                        {
+                            // append empty line
+                            PropertyValue value = new PropertyValue();
+                            value.Type = PropertyType.EMPTY_LINE;
+                            value.Content = line;
+
+                            properties.Add(UtilTool.GenerateGUID(), value);
+                        }
+                        else if (line.StartsWith("//"))
+                        {
+                            // append comments
+                            PropertyValue value = new PropertyValue();
+                            value.Type = PropertyType.COMMENTS;
+                            value.Content = line.Substring(2);
+
+                            properties.Add(UtilTool.GenerateGUID(), value);
                         }
                     }
 
@@ -106,7 +133,7 @@ namespace Resource.Convert
             return properties;
         }
 
-        private void ExportToAndroidResourceFile(Dictionary<string, string> properties, string aExportedPath)
+        private void ExportToAndroidResourceFile(Dictionary<string, PropertyValue> properties, string aExportedPath)
         {
             XmlDocument doc = new XmlDocument();
 
@@ -118,20 +145,51 @@ namespace Resource.Convert
             XmlElement res_elem = doc.CreateElement(string.Empty, "resources", string.Empty);
             doc.AppendChild(res_elem);
 
-            foreach (KeyValuePair<string, string> pair in properties)
+            foreach (KeyValuePair<string, PropertyValue> pair in properties)
             {
-               string value = pair.Key + IOS_SEPARATOR + pair.Value;
+                switch (pair.Value.Type)
+                {
+                    case PropertyType.RESOURCE:
+                        {
+                            //string value = pair.Key + IOS_SEPARATOR + pair.Value;
 
-               XmlElement element = doc.CreateElement(string.Empty, "string", string.Empty);
+                            XmlElement element = doc.CreateElement(string.Empty, "string", string.Empty);
 
-               XmlAttribute attr = doc.CreateAttribute("name");
-               attr.Value = pair.Key;
-               element.Attributes.Append(attr);
+                            XmlAttribute attr = doc.CreateAttribute("name");
+                            attr.Value = pair.Key;
+                            element.Attributes.Append(attr);
 
-               XmlText text = doc.CreateTextNode(pair.Value);
-               element.AppendChild(text);
+                            // convert format args
+                            string new_content = pair.Value.Content.Replace("%@", "%s");
+                            for (int i = 1; i < 9; i++)
+                            {
+                                new_content = new_content.Replace("%" + i + "$@", "%" + i + "$s");
+                            }
 
-               res_elem.AppendChild(element);
+                            XmlText text = doc.CreateTextNode(new_content);
+                            element.AppendChild(text);
+
+                            res_elem.AppendChild(element);
+                        }
+                        break;
+
+                    //case PropertyType.EMPTY_LINE:
+                    //    {
+                    //        XmlWhitespace space = doc.CreateWhitespace("\n");
+                    //        res_elem.AppendChild(space);
+                    //    }
+                    //    break;
+
+                    case PropertyType.COMMENTS:
+                        {
+                            XmlComment comment =  doc.CreateComment(pair.Value.Content);
+                            res_elem.AppendChild(comment);
+                        }
+                        break;
+                }
+
+                XmlWhitespace space = doc.CreateWhitespace("\n");
+                res_elem.AppendChild(space);
             }
 
             doc.Save(aExportedPath);

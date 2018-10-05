@@ -75,7 +75,7 @@ namespace Resource.Convert
                         value.Type = PropertyType.OTHERS;
                         value.Content = line;
 
-                        properties.Add(this.GenerateGUID(), value);
+                        properties.Add(UtilTool.GenerateGUID(), value);
                     }
 
                 } while (true);
@@ -126,23 +126,5 @@ namespace Resource.Convert
 
             File.WriteAllLines(filePath, new_contents, Encoding.UTF8);
         }
-
-        public string GenerateGUID()
-        {
-            return Guid.NewGuid().ToString();
-        }
-    }
-
-
-    enum PropertyType : ushort
-    {
-        RESOURCE = 0,
-        OTHERS
-    }
-
-    struct PropertyValue
-    {
-        public PropertyType Type;
-        public string Content;
     }
 }

@@ -67,7 +67,9 @@
     <Compile Include="Convert\I18nResourceConverter.cs" />
     <Compile Include="Convert\IOS2AndroidResourceConverter.cs" />
     <Compile Include="Convert\IOSResourceFormatter.cs" />
+    <Compile Include="Convert\PropertyType.cs" />
     <Compile Include="Convert\ResourceConverter.cs" />
+    <Compile Include="Convert\UtilTool.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
