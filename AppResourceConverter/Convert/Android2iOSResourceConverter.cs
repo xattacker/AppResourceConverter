@@ -106,7 +106,7 @@ namespace Resource.Convert
                             string new_content = pair.Value.Content.Replace("%s", "%@");
                             for (int i = 1; i < 9; i++)
                             {
-                                new_content = new_content.Replace("%" + i + "$s", "%" + i + "$@");
+                                new_content = new_content.Replace("%" + i + "s", "%" + i + "@");
                             }
 
                             new_contents[index] = pair.Key + IOS_SEPARATOR + new_content;
