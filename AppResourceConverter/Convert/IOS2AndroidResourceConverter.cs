@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Resource.Convert
 {
@@ -133,10 +135,10 @@ namespace Resource.Convert
             return properties;
         }
 
-        private void ExportToAndroidResourceFile(Dictionary<string, PropertyValue> properties, string aExportedPath)
+        private void ExportToAndroidResourceFile(Dictionary<string, PropertyValue> properties, string exportedPath)
         {
             XmlDocument doc = new XmlDocument();
-
+          
             //(1) the xml declaration is recommended, but not mandatory
             XmlDeclaration xmlDeclaration = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
             XmlElement root = doc.DocumentElement;
@@ -144,6 +146,8 @@ namespace Resource.Convert
 
             XmlElement res_elem = doc.CreateElement(string.Empty, "resources", string.Empty);
             doc.AppendChild(res_elem);
+
+            int index = 0;
 
             foreach (KeyValuePair<string, PropertyValue> pair in properties)
             {
@@ -188,11 +192,13 @@ namespace Resource.Convert
                         break;
                 }
 
-                XmlWhitespace space = doc.CreateWhitespace("\n");
+                XmlWhitespace space = doc.CreateWhitespace(index < properties.Count - 1 ? "\n\t" : "\n");
                 res_elem.AppendChild(space);
+
+                index++;
             }
 
-            doc.Save(aExportedPath);
+            doc.Save(exportedPath);
         }
     }
 }
