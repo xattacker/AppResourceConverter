@@ -40,7 +40,7 @@ namespace Resource.Convert
             return result;
         }
 
-        private Dictionary<string, PropertyValue> LoadiOSResource(string aResourcePath)
+        private Dictionary<string, PropertyValue> LoadiOSResource(string resourcePath)
         {
             Dictionary<string, PropertyValue> properties = new Dictionary<string, PropertyValue>();
             StreamReader reader = null;
@@ -51,7 +51,7 @@ namespace Resource.Convert
             {
                 string line = null;
                 int index = -1;
-                reader = File.OpenText(aResourcePath);
+                reader = File.OpenText(resourcePath);
 
                 do
                 {

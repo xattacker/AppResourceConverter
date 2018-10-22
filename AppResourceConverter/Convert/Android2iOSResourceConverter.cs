@@ -21,15 +21,132 @@ namespace Resource.Convert
             }
 
 
+            this.duplicateds.Clear();
+
+            Dictionary<string, PropertyValue> properties = this.LoadByReadLine(fromPath, ref this.duplicateds);
+            if (properties != null && properties.Count > 0)
+            {
+                if (properties.Count > 0)
+                {
+                    FileInfo file = new FileInfo(fromPath);
+                    toPath = Path.Combine(file.DirectoryName, "Localizable.strings");
+
+                    if (File.Exists(toPath))
+                    {
+                        File.Delete(toPath);
+                    }
+
+                    this.ExportToiOSResourceFile(properties, toPath);
+                }
+
+                duplicated = this.duplicateds;
+                result = true;
+            }
+
+            return result;
+        }
+
+        private Dictionary<string, PropertyValue> LoadByReadLine(string filePath, ref List<string> duplicated)
+        {
+            Dictionary<string, PropertyValue> properties = new Dictionary<string, PropertyValue>();
+            StreamReader reader = null;
+
+            try
+            {
+                string line = null;
+                reader = File.OpenText(filePath);
+
+                do
+                {
+                    line = reader.ReadLine();
+
+                    if (line == null)
+                    {
+                        break;
+                    }
+
+
+                    line = line.Trim();
+
+                    if (line.Length > 0 && line.StartsWith("<string"))
+                    {
+                        try
+                        {
+                            int key_start_index = line.IndexOf("=\"");
+                            int key_end_index = line.IndexOf("\">");
+                            string key = line.Substring(key_start_index + 2, key_end_index - key_start_index - 2);
+                           
+                            if (!properties.ContainsKey(key))
+                            {
+                                int value_start_index = line.IndexOf("</string>");
+                                string content = line.Substring(key_end_index + 2, value_start_index - key_end_index - 2).UnescapeXml();
+
+                                PropertyValue value = new PropertyValue();
+                                value.Type = PropertyType.RESOURCE;
+                                value.Content = "\"" + content + "\";";
+                                properties.Add("\"" + key + "\"", value);
+                            }
+                            else
+                            {
+                                duplicateds.Add(key);
+                            }
+                        }
+                        catch
+                        {
+                            // ignore one line error
+                        }
+                    }
+                    else
+                    {
+                        if (String.IsNullOrEmpty(line))
+                        {
+                            // append empty line
+                            PropertyValue value = new PropertyValue();
+                            value.Type = PropertyType.EMPTY_LINE;
+                            value.Content = line;
+
+                            properties.Add(UtilTool.GenerateGUID(), value);
+                        }
+                        else if (line.StartsWith("<!--"))
+                        {
+                            // append comments
+                            int end_index = line.LastIndexOf("-->");
+
+                            PropertyValue value = new PropertyValue();
+                            value.Type = PropertyType.COMMENTS;
+                            value.Content = line.Substring(4, end_index - 4);
+
+                            properties.Add(UtilTool.GenerateGUID(), value);
+                        }
+                    }
+
+                } while (true);
+            }
+            catch
+            {
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                    reader.Dispose();
+                    reader = null;
+                }
+            }
+
+            return properties;
+        }
+
+        private Dictionary<string, PropertyValue> LoadByXmlDocument(string filePath, ref List<string> duplicated)
+        {
+            Dictionary<string, PropertyValue> properties = new Dictionary<string, PropertyValue>();
+
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(File.ReadAllText(fromPath));
+            doc.LoadXml(File.ReadAllText(filePath));
 
             XmlElement root = doc.DocumentElement;
             XmlNodeList list = root.ChildNodes; //.SelectNodes("string");
-
-            Dictionary<string, PropertyValue> properties = new Dictionary<string, PropertyValue>();
-
-            this.duplicateds.Clear();
 
             if (list != null)
             {
@@ -48,7 +165,7 @@ namespace Resource.Convert
                         }
                         else
                         {
-                            this.duplicateds.Add(id);
+                            duplicateds.Add(id);
                         }
                     }
                     else if (node is XmlComment)
@@ -69,25 +186,9 @@ namespace Resource.Convert
                         properties.Add(UtilTool.GenerateGUID(), value);
                     }
                 }
-
-                if (properties.Count > 0)
-                {
-                    FileInfo file = new FileInfo(fromPath);
-                    toPath = Path.Combine(file.DirectoryName, "Localizable.strings");
-
-                    if (File.Exists(toPath))
-                    {
-                        File.Delete(toPath);
-                    }
-
-                    this.ExportToiOSResourceFile(properties, toPath);
-                }
-
-                duplicated = this.duplicateds;
-                result = true;
             }
 
-            return result;
+            return properties;
         }
 
         private void ExportToiOSResourceFile(Dictionary<string, PropertyValue> properties, string aExportedPath)
@@ -119,7 +220,7 @@ namespace Resource.Convert
                         break;
 
                     case PropertyType.EMPTY_LINE:
-                        new_contents[index] = "";
+                        new_contents[index] = string.Empty;
                         break;
                 }
 
