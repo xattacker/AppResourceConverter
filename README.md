@@ -4,10 +4,10 @@ a Resource file converter for iOS and Android App project
 
 ### what you could:
 
-convert Android string.xml to iOS Localizable.strings
+- convert Android string.xml to iOS Localizable.strings
 
-convert iOS Localizable.strings to Android string.xml
+- convert iOS Localizable.strings to Android string.xml
 
-remove duplicated string in iOS Localizable.strings
+- remove duplicated string in iOS Localizable.strings
 
-convert i18n localization resource string to unicode string
+- convert i18n localization resource string to unicode string
