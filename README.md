@@ -2,7 +2,7 @@
 a Resource file converter for iOS and Android App project
 
 
-### what you could:
+### what the tool could:
 
 - convert Android string.xml to iOS Localizable.strings
 
