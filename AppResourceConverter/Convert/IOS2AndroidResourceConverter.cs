@@ -167,7 +167,7 @@ namespace Resource.Convert
                             string new_content = pair.Value.Content.Replace("%@", "%s");
                             for (int i = 1; i < 9; i++)
                             {
-                                new_content = new_content.Replace("%" + i + "$@", "%" + i + "$s");
+                                new_content = new_content.Replace("%" + i + "@", "%" + i + "s");
                             }
 
                             XmlText text = doc.CreateTextNode(new_content);
