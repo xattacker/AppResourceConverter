@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -198,7 +198,6 @@ namespace Resource.Convert
 
             foreach (KeyValuePair<string, PropertyValue> pair in properties)
             {
-                // resouce string
                 switch (pair.Value.Type)
                 {
                     case PropertyType.RESOURCE:
