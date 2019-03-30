@@ -80,6 +80,7 @@ namespace Resource.Convert
                             {
                                 int value_start_index = line.IndexOf("</string>");
                                 string content = line.Substring(key_end_index + 2, value_start_index - key_end_index - 2).UnescapeXml();
+                                content = content.Replace("\"", "\\\"");
 
                                 PropertyValue value = new PropertyValue();
                                 value.Type = PropertyType.RESOURCE;
@@ -138,6 +139,9 @@ namespace Resource.Convert
             return properties;
         }
 
+
+        #region unused
+
         private Dictionary<string, PropertyValue> LoadByXmlDocument(string filePath, ref List<string> duplicated)
         {
             Dictionary<string, PropertyValue> properties = new Dictionary<string, PropertyValue>();
@@ -160,7 +164,11 @@ namespace Resource.Convert
                         {
                             PropertyValue value = new PropertyValue();
                             value.Type = PropertyType.RESOURCE;
-                            value.Content = "\"" + node.InnerText.Trim() + "\";";
+
+                            string content = node.InnerText.Trim();
+                            content = content.Replace("\"", "\\\"");
+                            value.Content = "\"" + content + "\";";
+
                             properties.Add("\"" + id + "\"", value);
                         }
                         else
@@ -190,6 +198,9 @@ namespace Resource.Convert
 
             return properties;
         }
+
+        #endregion
+
 
         private void ExportToiOSResourceFile(Dictionary<string, PropertyValue> properties, string aExportedPath)
         {
