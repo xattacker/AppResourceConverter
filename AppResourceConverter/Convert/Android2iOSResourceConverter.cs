@@ -9,6 +9,8 @@ namespace Resource.Convert
     // 將 Android project 的 string.xml 檔 轉成 iOS project 中的 Localizable.strings 檔
     class Android2iOSResourceConverter : ResourceConverter
     {
+        private CommentBlock commentTemp;
+
         public override bool Convert(string fromPath, out string toPath, out List<string> duplicated)
         {
             bool result = false;
@@ -68,14 +70,14 @@ namespace Resource.Convert
 
                     line = line.Trim();
 
-                    if (line.Length > 0 && line.StartsWith("<string"))
+                    if (line.Length > 0 && line.StartsWith("<string") && commentTemp == null)
                     {
                         try
                         {
                             int key_start_index = line.IndexOf("=\"");
                             int key_end_index = line.IndexOf("\">");
                             string key = line.Substring(key_start_index + 2, key_end_index - key_start_index - 2);
-                           
+
                             if (!properties.ContainsKey(key))
                             {
                                 int value_start_index = line.IndexOf("</string>");
@@ -112,12 +114,36 @@ namespace Resource.Convert
                         {
                             // append comments
                             int end_index = line.LastIndexOf("-->");
+                            if (end_index >= 4)
+                            {
+                                PropertyValue value = new PropertyValue();
+                                value.Type = PropertyType.COMMENTS;
+                                value.Content = line.Substring(4, end_index - 4);
+                                properties.Add(UtilTool.GenerateGUID(), value);
+
+                                commentTemp = null;
+                            }
+                            else
+                            {
+                                commentTemp = new CommentBlock();
+                                commentTemp.comment = line.Substring(4);
+                            }
+                        }
+                        else if (line.EndsWith("-->"))
+                        {
+                            int end_index = line.LastIndexOf("-->");
+                            string temp = line.Substring(0, end_index);
+                            commentTemp.comment += temp.Trim();
 
                             PropertyValue value = new PropertyValue();
                             value.Type = PropertyType.COMMENTS;
-                            value.Content = line.Substring(4, end_index - 4);
-
+                            value.Content = commentTemp.comment;
                             properties.Add(UtilTool.GenerateGUID(), value);
+                            commentTemp = null;
+                        }
+                        else if (commentTemp != null)
+                        {
+                            commentTemp.comment += line + "\n";
                         }
                     }
 
@@ -204,8 +230,7 @@ namespace Resource.Convert
 
         private void ExportToiOSResourceFile(Dictionary<string, PropertyValue> properties, string aExportedPath)
         {
-            string[] new_contents = new string[properties.Count];
-            int index = 0;
+            StringBuilder builder = new StringBuilder();
 
             foreach (KeyValuePair<string, PropertyValue> pair in properties)
             {
@@ -226,24 +251,39 @@ namespace Resource.Convert
                                 new_content = new_content.Replace("%" + i + "S", "%" + i + "@");
                             }
 
-                            new_contents[index] = pair.Key + IOS_SEPARATOR + new_content;
+                            builder.Append(pair.Key + IOS_SEPARATOR + new_content);
+                            builder.Append("\n");
                         }
                         break;
 
 
                     case PropertyType.COMMENTS:
-                        new_contents[index] = "//" + pair.Value.Content;
+                        {
+                            string[] keyword = { "\n" };
+                            string[] array = pair.Value.Content.Split(keyword, StringSplitOptions.RemoveEmptyEntries);
+
+                            foreach (string line in array)
+                            {
+                                builder.Append("//" + line);
+                                builder.Append("\n");
+                            }
+                        }
                         break;
 
                     case PropertyType.EMPTY_LINE:
-                        new_contents[index] = string.Empty;
+                        builder.Append(string.Empty);
+                        builder.Append("\n");
                         break;
                 }
-
-                index++;
             }
 
-            File.WriteAllLines(aExportedPath, new_contents, Encoding.UTF8);
+            File.WriteAllText(aExportedPath, builder.ToString(), Encoding.UTF8);
         }
+    }
+
+
+    class CommentBlock
+    {
+        public string comment;
     }
 }
