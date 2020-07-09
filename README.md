@@ -1,5 +1,5 @@
 # AppResourceConverter
-a Resource file converter for iOS and Android App project
+a Resource file converter for iOS and Android App project. wrtten by C#
 
 
 ### what the tool could:
