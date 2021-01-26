@@ -4,7 +4,7 @@ a Resource file converter for iOS and Android App project. wrtten by C#
 Java version project: <https://github.com/xattacker/AppResourceConverter-Java>
 
 
-### what the tool could:
+### what the tool could do:
 
 - convert Android string.xml to iOS Localizable.strings
 
