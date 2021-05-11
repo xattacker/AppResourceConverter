@@ -240,13 +240,13 @@ namespace Resource.Convert
                         {
                             // convert format args
                             string new_content = pair.Value.Content.Replace("%s", "%@");
-                            for (int i = 1; i < 9; i++)
+                            for (int i = 1; i <= 9; i++)
                             {
                                 new_content = new_content.Replace("%" + i + "s", "%" + i + "@");
                             }
 
                             new_content = new_content.Replace("%S", "%@");
-                            for (int i = 1; i < 9; i++)
+                            for (int i = 1; i <= 9; i++)
                             {
                                 new_content = new_content.Replace("%" + i + "S", "%" + i + "@");
                             }
